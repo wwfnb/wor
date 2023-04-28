@@ -1,0 +1,64 @@
+
+真机上仍然使用之前安装的ubuntu 22.04LTS，在virtual box上面安装 ubuntu 20.04
+下载vscode : 使用的snap下，sudo snap install code
+下载环境：gcc，g++，camke等（真机和虚拟机都安装了）
+
+
+CMakeLists.txt---cmake指令--->>>Makefile文件----make指令----依次执行一些gcc/g++的指令编译文件----->>>编译整个c项目
+
+cmake构建项目：
+    1.大量源代码文件分布于不同的目录 ---- 不同的源代码目录编写一个 CMakeLists.txt 文件
+    2.版本管理工具只管理源代码，需要忽略编译结果，即外部构建 ---- 在项目的根目录下创建 “build”目录，在“build”目录下执行 “cmake .. \n make”,编译的结果都会
+    出现在build目录下，将这个目录加入 .gitignore中即可不跟踪编译结果。
+    {
+        	关于"cmake .. \n make"猜测是 cmake程序会寻找 cmake xxxx 中xxxx路径中的CMakeList.txt文件，并且生成相应的Makefile文件，生成的Makefile文件放置于
+        	当前目录，再使用make 执行cmake生成的Makefile文件。
+        cmake学习：（https://blog.csdn.net/qq_43257914/article/details/128409831）
+       	#要使用cmake的原因：
+       	各个平台有其自己的Make工具，比如GUN Make，QT的qmake，微软的 MS nmake，如果软件想要跨平台编译，那么就要给每一个平台都写一个相应的“Makefile”文件，而使用cmake则只需要使用符合cmake的语句描述编译流程，即可自动生成对应的Makefile文件
+        #cmake写出编译的流程，在本地生成本地化的“Makefile”文件，所以可以跨平台使用
+        #编写CMakeists.txt文件
+       	（
+       		注释： #之后的内容
+       		命令： 命令名称 + 小括号 + 以空格分隔的参数
+       		空格：用来分隔命令中的参数
+       	）
+        1. cmake_minimal_required(cmake的最低的版本要求)
+        
+        2. project(项目的名称) 
+        
+        3.add_executable(target 依赖的文件列表) ， 类似于Makefile中的target，后面的部分类似依赖列表
+        #执行CMakeists.txt文件
+        cmake 文件路径 eg: cmake .在当前文件中查找CMakeists.txt文件
+        	根据“cmake .”的结果可以发现，我们并没有指定gcc，g++等的版本,但是cmake会自己detect编译器的信息，然后会自己生成文件
+        cmake生成的文件 {
+        		一个CMakefiles目录文件，包含了许多看不懂的东西 --------- 暂时放弃 -_-
+        		在当前目录生成了Makefile文件{
+        			尝试阅读了一下：（以下规则即target）
+        		1. 第一部分一堆看不懂的定义的规则
+        		2. 第二部分是一些cmake需要使用的一些环境变量，诸如 使用的shell的路径，cmake所在的路径，top-level source dir，top-level binary dir
+        		3. 第三部分是 camke定义的一些规则，edit_cache ....{
+        				使用 .phony的规则 实现类似函数调用的效果,eg:
+        			.phony : A
+        			.phony : B
+        			A : B
+        			    do something of A
+        				这样当想要执行A的时候，会先 “调用B”的执行，然后在 “do something of A”
+        			###
+        				当我们使用cmake完之后，直接键入 make发生的事情：
+        			make -> 
+        			default_target -> (makefile直接make按照顺序执行规则)
+        			all -> 
+        			cmake_check_build_system -> 
+        			$(CMAKE_COMMAND) -E cmake_progress_start /home/wangwanfu/spaExam/eg0/CMakeFiles /home/wangwanfu/spaExam/eg0//CMakeFiles/progress.marks
+				$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
+				$(CMAKE_COMMAND) -E cmake_progress_start /home/wangwanfu/spaExam/eg0/CMakeFiles 0
+				.............
+			4. 最后是类似正常自己写的Makefile，生成一系列文件的.o，(生成的Makefile还有 .i,.s文件)
+			????cmake生成的Makefile文件全是采用的.phony的方式，感觉全部做成了这样类似函数调用的方式。。
+			5.提供了一个help的规则输出了一些可以使用的  规则
+        		}
+        	}
+        }
+    }
+    3.链接外部库，非C标准库 ---- 配置环境变量
