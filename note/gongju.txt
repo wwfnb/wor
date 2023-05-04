@@ -32,6 +32,7 @@ cmake构建项目：
         cmake 文件路径 eg: cmake .在当前文件中查找CMakeists.txt文件
         	根据“cmake .”的结果可以发现，我们并没有指定gcc，g++等的版本,但是cmake会自己detect编译器的信息，然后会自己生成文件
         cmake生成的文件 {
+        	#是在执行命令的目录下生成下面的目录和文件
         		一个CMakefiles目录文件，包含了许多看不懂的东西 --------- 暂时放弃 -_-
         		在当前目录生成了Makefile文件{
         			尝试阅读了一下：（以下规则即target）
@@ -51,13 +52,58 @@ cmake构建项目：
         			all -> 
         			cmake_check_build_system -> 
         			$(CMAKE_COMMAND) -E cmake_progress_start /home/wangwanfu/spaExam/eg0/CMakeFiles /home/wangwanfu/spaExam/eg0//CMakeFiles/progress.marks
-				$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-				$(CMAKE_COMMAND) -E cmake_progress_start /home/wangwanfu/spaExam/eg0/CMakeFiles 0
-				.............
-			4. 最后是类似正常自己写的Makefile，生成一系列文件的.o，(生成的Makefile还有 .i,.s文件)
-			????cmake生成的Makefile文件全是采用的.phony的方式，感觉全部做成了这样类似函数调用的方式。。
-			5.提供了一个help的规则输出了一些可以使用的  规则
+					$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
+					$(CMAKE_COMMAND) -E cmake_progress_start /home/wangwanfu/spaExam/eg0/CMakeFiles 0
+					.............
+				4. 最后是类似正常自己写的Makefile，生成一系列文件的.o，(生成的Makefile还有 .i,.s文件)
+				????cmake生成的Makefile文件全是采用的.phony的方式，感觉全部做成了这样类似函数调用的方式。。
+				5.提供了一个help的规则输出了一些可以使用的  规则(make执行命令的时候会回显，不想其回显则在命令前加“@”)
         		}
+        	}
+        }
+        cmake构建项目{
+        			一些cmake指令{
+        		1.set(var_name value1 value2 .....) 定义变量	{
+        			value1 被视作字符串处理， value1 value2之间直接连接在一起，没有分隔符
+        			set(wwf,123,22,33,44)
+        			#要使用变量： ${var} eg:${wwf}
+        		}
+        		2.message(kind value1 value2 value3)
+        				输出kind类型的信息，信息由value1 value2 ... 直接拼接形成，没有分隔符
+        		kind{
+        			1.SEND_ERROR ?
+        			2.FATAL_ERROR ?
+        			3.STATUS 输出前缀为--的信息
+        		}
+        		eg： message(STATUS ${wwf} nb) , 执行这个指令的时候输出了 -- wwfnb
+        		
+        		3.add_executable(exe_filename src1 src2 src3 ...)
+        		
+        		4.add_subdirectory(directory_name taget_direcoty_name) 指定去哪里编译，即去执行那个目录下的CMakeLists文件，结果放在哪里{
+        			taget_direcoty_name会自己在执行cmake指令时的当前目录中自己创建
+        			Cmake遇到 add_subdirectory()指令时跳转到 指定的目录去执行那个目录下的 CMakeLists.txt 文件
+        					执行完了之后再回到之后的指令继续开始执行
+        					
+        			#不同层次的构建项目，使用add_subdirectory来实现
+        		}
+        		
+        		5.add_library(library_name STATIC/SHARED src) {
+        					根据src生成一个库 名字叫做 lib[library_name].xx，会自动补上相应类型的前(lib)后缀(.a/.lib/ .so/.dll)
+        			SHARD/STATIC 分别代表动态库(.so/.dll)和静态库(.a/.lib){
+        						库是可以复用的代码，静态和动态的区别来自于在链接时的链接方式。
+        						静态库在链接的时候将库和.o文件一起打包到可执行文件中。 ---- 一起打包，浪费了空间，这个库在内存中可能存在多个相同的版本。
+        						动态库则是在程序运行的时候才载入一份进入内存，内存中始终只有一份这个动态库，要用到这个库的进程都可以共享这个库。 （所以也叫shared库）
+        				
+        				#静态库在编译的时候就打包进入了可执行文件，所以可执行文件的运行不需要管 使用的静态库存不存在。
+        				#动态库在编译的时候没有把动态库放进可执行文件，只放了“引用”，所以可执行文件的执行还需要动态库的存在。
+        			}
+        		}
+        		
+        		6.include_directories() 加头文件的路径
+        		7.target_link_libraries() 加库的路径,当前文件需要使用的库的名字写在这个里面
+        	}
+        	1.多层次的CMakeists.txt{
+        		1. project目录下，
         	}
         }
     }
