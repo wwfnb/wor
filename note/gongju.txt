@@ -99,8 +99,8 @@ cmake构建项目：
         			}
         		}
         		
-        		6.include_directories() 加头文件的路径
-        		7.target_link_libraries() 加库的路径,当前文件需要使用的库的名字写在这个里面
+        		6.include_directories() 加头文件 .h文件 的路径
+        		7.target_link_libraries() 加库(.a | .so)的路径,当前文件需要使用的库的名字写在这个里面
         	}
         	1.多层次的CMakeists.txt{
         		1. project目录下，
