@@ -1,0 +1,44 @@
+1.BB:BasicBlock{
+	一个指令序列，一个入口一个出口，LLVM-IR给出了BB
+	ll -> dot -> png(CFG，控制流图){
+		xdot也可以可视化 dot文件
+	}
+}
+Static Program Analysis 南大
+{
+	程序存在的一些问题：
+		私有信息泄漏
+		空指针的解引用
+		类型转换是否安全
+		程序中某块区域是否可以被两个指针指向
+		程序中是否有些 断言 是失败的
+		程序中是否存在 死代码
+		............
+	静态分析就是在程序被运行前判断是否有上述类似的问题出现
+	“Any non-trivial property of the behavior of
+	programs in a r.e. language is undecidable.” ————Rice’s Theorem
+	non-trivial properties
+	~= interesting properties
+	~= the properties related with run-time behaviors of programs
+	取决于运行时的行为的属性 大概都是 不平凡的属性 
+	
+	Rice 不存在 完美的static analysis可以一定确定程序是否满足这些不平凡的属性
+	
+	Sound but not fully-precise static analysis 健全但不完全精确的静态分析
+	
+	静态分析要力求 #完整#， 同时要在 #分析的精确# 和 #分析的速度# 之间做好权衡
+	
+	
+	抽象 ---- 程序的状态
+	over approximation：Transfer Functions
+}
+
+数据流分析简{
+	数据流分析
+	基本思想：程序视作 #状态# 和 #状态的转移# 两部分组成，#忽视# 状态转移的条件，分析状态转移时的 #变化#。
+	近似的两种方案：
+	忽略程序的条件判断，认为程序的所有分支都有可能到达。
+	控制流分叉合并。这会大大的减少计算量。
+	
+	还要看课
+}
