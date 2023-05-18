@@ -45,3 +45,42 @@
 }
 
 5.安装SVF,跟着教程就可以了
+
+6. svf简单使用{
+	1.编写 a.c
+	2.a.c ---> a.ll{
+		//-no-opaque-pointers在clang-15中才有，要用clang-15
+		clang-15 -S -c -Xclang -no-opaque-pointers -fno-discard-value-names -g -emit-llvm a.c -o a.ll
+	}
+	3.a.ll 使用svf{
+		./svf-ex a.ll -dump-cfg
+		-dump-icfg : 保存控制流
+		产生的文件{
+			a.svf.bc  
+			icfg.dot : 控制流图文件， 使用  xdot命令可视化这个文件,可以看见一个有向图，循环在这个图上是一个环
+			icfg_initial.dot
+		}
+		svf-ex 的其他参数使用 svf-ex -h查看
+	}
+}
+7. z3{
+	Z3是由Microsoft Research开发的高性能定理证明器。
+	简单的说就是做逻辑约束验证的，这一点在静态程序分析中应用很广泛
+	z3的使用{
+		在一个项目中，于src目录同级，创建一个放好z3的库文件的目录，可以取名为 "z3_dist"
+		在"z3_dist"中放bin，includes等目录便于写的项目可以链接外部库{
+			CMakeLists中的 
+			include_directories()加头文件路径 eg include_directories(SYSTEM "../z3_dist/includes")
+			target_link_libraries("../z3_dist/bin/libz3.a") libz3.so
+		}
+		{链接外部库的时候：
+			find_package()
+			在 cmake 的编译体系中，package 用来指代一个依赖库，包括一些头文件、动态库、静态库等等，在 CMakeFileLists.txt 中通过 find_package()命令可以很轻易实现。
+			find_package(xxxx ),可以查找对应的符合cmake工程外部库，并且找到了之后会把这个库要包含的外部库的：
+				头文件所在的路径 赋给  --> xxxx_INCLUDE_DIRS
+				库文件所在的路径 赋给  --> xxxx_LIBRARIES
+				查找的结果（是否找到）赋给 --> xxxx_FOUND	
+			上述设置的变量实际上是由对应的工程提供的cmake文件设置的。。
+		}
+	}
+}
